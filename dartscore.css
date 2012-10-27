@@ -1,0 +1,17 @@
+/* CSS declarations go here */
+.scores {
+  height: 20px;
+}
+
+.buttons, .round {
+  clear: both;
+  padding-top: 10px;
+}
+
+.potential a.score {
+  display: block;
+  float: left;
+  width: 30%;
+  margin: 0;
+  padding: 5% 0;
+}

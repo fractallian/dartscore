@@ -1,0 +1,76 @@
+<head>
+  <title>Dartscore</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+</head>
+
+<body>
+  <div class="container-fluid">
+    {{> main}}
+  </div>
+</body>
+
+<template name="main">
+  {{#if user}}
+    {{#if round}}
+      {{> round round}}
+    {{else}}
+      <a href="#" class="btn btn-success create">New Round</a>
+      {{> selectRound}}
+      {{#constant}}
+        <div id="chart"></div>
+        <div id="pieChart"></div>
+      {{/constant}}
+    {{/if}}
+  {{else}}
+    {{loginButtons}}
+  {{/if}}
+</template>
+
+<template name="selectRound">
+  {{#each rounds}}
+    <div class="round">
+      {{#if finished}}
+        <a href="#" class="btn btn-info">{{displayName}}</a>
+      {{else}}
+        <a href="#" class="btn">{{displayName}}</a>
+      {{/if}}
+    </div>
+  {{/each}}
+</template>
+
+<template name="round">
+  {{#if section}}
+    {{> section section}}
+  {{else}}
+    {{{statsTable}}}
+    {{#with stats}}
+      <div>Hits: {{hits}}</div>
+      <div>Hits Per Dart: {{format hpd}}</div>
+      <div>Darts To Close: {{format dtc}}</div>
+      <div>Percent Of Perfect: {{format pop}}</div>
+    {{/with}}
+    {{#constant}}
+      <div id="roundChart"></div>
+    {{/constant}}
+    <a href="#" class="btn back">Back</a>
+  {{/if}}
+</template>
+
+<template name="section">
+  <h1>{{number}}</h1>
+  <div class="scores">
+    <b>({{scoreNumber}})</b>
+    {{#each scores}}
+      {{this}}
+    {{/each}}
+  </div>
+  <div class="potential">
+    {{#each potentialScores}}
+      <a href="#" class="btn btn-large score">{{this}}</a>
+    {{/each}}
+  </div>
+  <div class="buttons">
+    <a href="#" class="btn btn-danger undo">Undo</a>
+    <a href="#" class="btn back">Back</a>
+  </div>
+</template>
