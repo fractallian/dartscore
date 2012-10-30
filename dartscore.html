@@ -11,37 +11,74 @@
 
 <template name="main">
   {{#if user}}
-    {{#if round}}
-      {{> round round}}
+    <div class="navbar navbar-static">
+      <div class="navbar-inner">
+        <div class="container">
+          <a class="brand" href="">Dartscore</a>
+          <ul class="nav" role="navigation">
+            {{> selectRound}}
+            <li class="{{editingActive}}">
+              <a href="#" class="edit">Manage Sessions</a>
+            </li>
+          </ul>
+        </div>
+      </div>
+    </div>
+    {{#if editing}}
+      {{> editRounds}}
     {{else}}
-      <a href="#" class="btn btn-success create">New Round</a>
-      {{> selectRound}}
-      {{#constant}}
-        <div id="chart"></div>
-        <div id="pieChart"></div>
-      {{/constant}}
+      {{#if round}}
+        {{> round round}}
+      {{else}}
+        {{> chart charts.line}}
+      {{/if}}
     {{/if}}
   {{else}}
     {{loginButtons}}
   {{/if}}
 </template>
 
+<template name="editRounds">
+  <table class="table table-bordered table-hover">
+    <tr><th>Date</th><th>Complete</th><th>Hits</th><th>HPD</th><th>DTC</th><th>POP</th></tr>
+    {{#each rounds}}
+      {{#if selected}}<tr class="info">{{else}}<tr>{{/if}}
+        <td>{{displayName}}</td><td>{{bool finished}}</td><td>{{f stats.hits}}</td><td>{{f stats.hpd}}</td><td>{{f stats.dtc}}</td><td>{{f stats.pop}}</td>
+      </tr>
+    {{/each}}
+  </table>
+  <a href="#" class="btn btn-danger delete">Delete Selected</a>
+</template>
+
 <template name="selectRound">
-  {{#each rounds}}
-    <div class="round">
-      {{#if finished}}
-        <a href="#" class="btn btn-info">{{displayName}}</a>
-      {{else}}
-        <a href="#" class="btn">{{displayName}}</a>
-      {{/if}}
-    </div>
-  {{/each}}
+  <li class="dropdown {{roundActive}}">
+    <a href="" class="dropdown-toggle" id="dLabel" role="button" data-toggle="dropdown">
+      Session
+      <b class="caret"></b>
+    </a>
+    <ul class="dropdown-menu" role="menu" aria-labelledby="dLabel">
+      {{#each rounds}}
+        <li class="success">
+          {{#if finished}}
+            <a href="#" class="round finished">{{displayName}}</a>
+          {{else}}
+            <a href="#" class="round">{{displayName}}</a>
+          {{/if}}
+        </li>
+      {{/each}}
+      <li class="divider"></li>
+      <li>
+        <a href="#" class="create">New Session</a>
+      </li>
+    </ul>
+  </li>
 </template>
 
 <template name="round">
   {{#if section}}
     {{> section section}}
   {{else}}
+    <h3>{{displayName}}</h3>
     {{{statsTable}}}
     {{#with stats}}
       <div>Hits: {{hits}}</div>
@@ -49,10 +86,8 @@
       <div>Darts To Close: {{format dtc}}</div>
       <div>Percent Of Perfect: {{format pop}}</div>
     {{/with}}
-    {{#constant}}
-      <div id="roundChart"></div>
-    {{/constant}}
-    <a href="#" class="btn back">Back</a>
+    {{> chart charts.radial}}
+    <a class="btn back">Back</a>
   {{/if}}
 </template>
 
@@ -66,11 +101,17 @@
   </div>
   <div class="potential">
     {{#each potentialScores}}
-      <a href="#" class="btn btn-large score">{{this}}</a>
+      <a class="btn btn-large score">{{this}}</a>
     {{/each}}
   </div>
   <div class="buttons">
-    <a href="#" class="btn btn-danger undo">Undo</a>
-    <a href="#" class="btn back">Back</a>
+    <a class="btn btn-danger undo">Undo</a>
+    <a class="btn back">Back</a>
   </div>
+</template>
+
+<template name="chart">
+  {{#constant}}
+    <div id="{{id}}"></div>
+  {{/constant}}
 </template>
