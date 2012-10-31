@@ -10,6 +10,8 @@ if Meteor.isClient
 
   Meteor.startup ->
     Backbone.history.start(pushState: true)
+    $('a.dropdown-toggle, .dropdown-menu a').on 'touchstart', (e) ->
+      e.stopPropagation()
 
   getSections = ->
     obj = []
@@ -60,6 +62,9 @@ if Meteor.isClient
   removeScore = ->
     round = Rounds.current()
     section = currentSection round
+    if section.scores.length == 0
+      prev = round.sections[round.sections.indexOf(section) - 1]
+      section = prev if prev?
     section.scores.pop()
     Rounds.update round._id, {$set: {sections: round.sections}}
 
@@ -166,16 +171,21 @@ if Meteor.isClient
   Template.editRounds.rounds = Rounds.all
 
   Template.editRounds.displayName = ->
-    Rounds.name @
+    moment(@date).format("dddd, M/D/YYYY")
+    # Rounds.name @
 
   Template.editRounds.selected = ->
-    Rounds.selectedIds().indexOf(@_id) != -1
+    if Rounds.selectedIds().indexOf(@_id) != -1 then " alert-info" else ""
 
   Template.editRounds.events
-    "click tr": ->
+    "click .select": ->
       Rounds.toggleSelected @_id
+      return false
     "click .delete": ->
       Rounds.remove(_id: {$in: Rounds.selectedIds()})
+      return false
+    "click .view": ->
+      Router.setRound @_id
 
   Template.editRounds.bool = (data) ->
     if data then "Yes" else "No"
@@ -233,6 +243,16 @@ if Meteor.isClient
       Router.setRound null
 
 # section
+  Template.section.throws = [1..10]
+
+  Template.section.hits = (section) ->
+    section.scores[@ - 1]
+
+  Template.section.total = ->
+    _.reduce @scores, (memo, num) ->
+      memo + num
+    , 0
+
   Template.section.potentialScores = ->
     if @number == "B"
       (i for i in [0..6])
@@ -241,6 +261,9 @@ if Meteor.isClient
 
   Template.section.scoreNumber = ->
     @scores.length + 1
+
+  Template.section.canUndo = ->
+    @scores.length > 0 or @number != Rounds.current().sections[0].number
 
   Template.section.events
     "click .score": ->

@@ -16,9 +16,9 @@
         <div class="container">
           <a class="brand" href="">Dartscore</a>
           <ul class="nav" role="navigation">
-            {{> selectRound}}
+            <!-- select round -->
             <li class="{{editingActive}}">
-              <a href="#" class="edit">Manage Sessions</a>
+              <a href="#" class="edit">Sessions</a>
             </li>
           </ul>
         </div>
@@ -39,15 +39,25 @@
 </template>
 
 <template name="editRounds">
-  <table class="table table-bordered table-hover">
-    <tr><th>Date</th><th>Complete</th><th>Hits</th><th>HPD</th><th>DTC</th><th>POP</th></tr>
-    {{#each rounds}}
-      {{#if selected}}<tr class="info">{{else}}<tr>{{/if}}
-        <td>{{displayName}}</td><td>{{bool finished}}</td><td>{{f stats.hits}}</td><td>{{f stats.hpd}}</td><td>{{f stats.dtc}}</td><td>{{f stats.pop}}</td>
-      </tr>
-    {{/each}}
-  </table>
-  <a href="#" class="btn btn-danger delete">Delete Selected</a>
+  <div class="editRounds">
+    <a href="#" class="btn btn-success btn-large btn-block create">New Session</a>
+    <ul class="unstyled clearfix">
+      {{#each rounds}}
+        <li class="alert clearfix{{selected}}">
+          {{#if finished}}
+            <table class="table pull-right">
+              <tr><th>Hits</th><th>HPD</th><th>DTC</th><th>POP</th></tr>
+              <tr><td>{{f stats.hits}}</td><td>{{f stats.hpd}}</td><td>{{f stats.dtc}}</td><td>{{f stats.pop}}</td></tr>
+            </table>
+          {{/if}}
+          <h4>{{displayName}}</h4>
+          <a href="#" class="label label-info view">View</a>
+          <a href="#" class="label select">Select</a>
+        </li>
+      {{/each}}
+    </ul>
+  </div>
+  <a href="#" class="btn btn-danger btn-large btn-block delete">Delete Selected</a>
 </template>
 
 <template name="selectRound">
@@ -78,35 +88,45 @@
   {{#if section}}
     {{> section section}}
   {{else}}
-    <h3>{{displayName}}</h3>
-    {{{statsTable}}}
-    {{#with stats}}
-      <div>Hits: {{hits}}</div>
-      <div>Hits Per Dart: {{format hpd}}</div>
-      <div>Darts To Close: {{format dtc}}</div>
-      <div>Percent Of Perfect: {{format pop}}</div>
-    {{/with}}
-    {{> chart charts.radial}}
-    <a class="btn back">Back</a>
+    <div class="roundDetails">
+      <h3>{{displayName}}</h3>
+      {{#with stats}}
+        <dl class="dl-horizontal">
+          <dt>Hits</dt><dd>{{hits}}</dd>
+          <dt>Hits Per Dart</dt><dd>{{format hpd}}</dd>
+          <dt>Darts To Close</dt><dd>{{format dtc}}</dd>
+          <dt>Percent Of Perfect</dt><dd>{{format pop}}</dd>
+        </dl>
+      {{/with}}
+      {{> chart charts.radial}}
+      {{{statsTable}}}
+    </div>
   {{/if}}
 </template>
 
 <template name="section">
   <h1>{{number}}</h1>
-  <div class="scores">
-    <b>({{scoreNumber}})</b>
-    {{#each scores}}
-      {{this}}
-    {{/each}}
-  </div>
+  <table class="table table-bordered">
+    <tr>
+      {{#each throws}}
+        <th>{{this}}</th>
+      {{/each}}
+      <th>Total</th>
+    </tr>
+    <tr>
+      {{#each throws}}
+        <td>{{hits ..}}</td>
+      {{/each}}
+      <td><b>{{total}}</td></td>
+    </tr>
+  </table>
   <div class="potential">
     {{#each potentialScores}}
       <a class="btn btn-large score">{{this}}</a>
     {{/each}}
-  </div>
-  <div class="buttons">
-    <a class="btn btn-danger undo">Undo</a>
-    <a class="btn back">Back</a>
+    {{#if canUndo}}
+      <a class="btn btn-danger btn-large undo">Undo</a>
+    {{/if}}
   </div>
 </template>
 
