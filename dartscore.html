@@ -1,6 +1,7 @@
 <head>
   <title>Dartscore</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+  <link rel="apple-touch-icon-precomposed" href="images/icon.jpg"/>
 </head>
 
 <body>
@@ -60,6 +61,7 @@
   <a href="#" class="btn btn-danger btn-large btn-block delete">Delete Selected</a>
 </template>
 
+<!-- currently unused -->
 <template name="selectRound">
   <li class="dropdown {{roundActive}}">
     <a href="" class="dropdown-toggle" id="dLabel" role="button" data-toggle="dropdown">
@@ -122,10 +124,14 @@
   </table>
   <div class="potential">
     {{#each potentialScores}}
-      <a class="btn btn-large score">{{this}}</a>
+      <div class="grid">
+        <a class="btn btn-large btn-block score">{{this}}</a>
+      </div>
     {{/each}}
     {{#if canUndo}}
-      <a class="btn btn-danger btn-large undo">Undo</a>
+      <div class="grid">
+        <a class="btn btn-danger btn-large btn-block undo">Undo</a>
+      </div>
     {{/if}}
   </div>
 </template>
